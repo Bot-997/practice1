@@ -4,7 +4,7 @@
       <!-- 侧边栏 -->
       <el-aside :width="isCollapse? '64px' : '200px'" style="background-color: dimgray; overflow: hidden;">
         <div style="height: 60px; line-height: 60px; text-align: center">
-          <img src="../assets/logo.png" style="width: 20px; vertical-align: middle">
+          <img src="../assets/logo.png" style="width: 20px; vertical-align: middle" alt="">
           <b v-show="!isCollapse" style="color: white">后台管理系统</b>
         </div>
         <!-- 侧边栏目录 -->
@@ -62,18 +62,12 @@
               <el-menu-item index="3-1">选项1</el-menu-item>
               <el-menu-item index="3-2">选项2</el-menu-item>
             </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-              <el-menu-item index="3-3">选项3</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="3-4">
-              <template slot="title">选项4</template>
-              <el-menu-item index="3-4-1">选项4-1</el-menu-item>
-            </el-submenu>
           </el-submenu>
         </el-menu>
       </el-aside>
 
       <el-container>
+        <!-- 顶部 -->
         <el-header style="font-size: 12px; border-bottom: 1px solid #ccc; display: flex">
           <div style="flex: 1; font-size: 18px">
             <span :class= "isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'" style="cursor: pointer" @click="collapse"></span>
@@ -88,6 +82,12 @@
         </el-header>
 
         <el-main>
+
+          <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>User1</el-breadcrumb-item>
+          </el-breadcrumb>
+
           <!-- 搜索框 -->
           <div style="padding: 10px 0">
             <el-input style="width: 300px" placeholder="请输入名称" suffix-icon="el-icon-search"></el-input>
@@ -96,14 +96,26 @@
             <el-button class="ml-5" type="primary">搜索</el-button>
           </div>
 
+          <div style="margin: 10px 0">
+            <el-button type="primary">新增 <i class="el-icon-circle-plus-outline"></i></el-button>
+            <el-button type="danger">批量删除 <i class="el-icon-remove-outline"></i></el-button>
+            <el-button type="primary">导入 <i class="el-icon-bottom"></i></el-button>
+            <el-button type="primary">导出 <i class="el-icon-top"></i></el-button>
+          </div>
 
           <!-- 数据主体 -->
-          <el-table :data="tableData">
+          <el-table :data="tableData" stripe >
             <el-table-column prop="date" label="日期" width="140">
             </el-table-column>
             <el-table-column prop="name" label="姓名" width="120">
             </el-table-column>
             <el-table-column prop="address" label="地址">
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button type="success">编辑 <i class="el-icon-edit-outline"></i></el-button>
+                <el-button type="danger">删除 <i class="el-icon-remove-outline"></i></el-button>
+              </template>
             </el-table-column>
           </el-table>
 
@@ -128,7 +140,6 @@
     color: #333;
     line-height: 60px;
   }
-
 </style>
 
 
@@ -141,7 +152,7 @@
         address: '上海市普陀区金沙江路 1518 弄'
       };
       return {
-        tableData: Array(5).fill(item),
+        tableData: Array(10).fill(item),
         isCollapse: false,
         collapseBtnClass: 'el-icon-s-fold',
         sideWidth: 200
