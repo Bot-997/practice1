@@ -90,10 +90,10 @@
 
           <!-- 搜索框 -->
           <div style="padding: 10px 0">
-            <el-input style="width: 300px" placeholder="请输入名称" suffix-icon="el-icon-search"></el-input>
-            <el-input class="ml-5" style="width: 300px" placeholder="请输入邮箱" suffix-icon="el-icon-message"></el-input>
-            <el-input class="ml-5" style="width: 300px" placeholder="请输入地址" suffix-icon="el-icon-position"></el-input>
-            <el-button class="ml-5" type="primary">搜索</el-button>
+            <el-input style="width: 300px" placeholder="请输入名称" suffix-icon="el-icon-search" v-model="username"></el-input>
+            <el-input class="ml-5" style="width: 300px" placeholder="请输入邮箱" suffix-icon="el-icon-message" v-model="email"></el-input>
+            <el-input class="ml-5" style="width: 300px" placeholder="请输入地址" suffix-icon="el-icon-position" v-model="address"></el-input>
+            <el-button class="ml-5" type="primary" @click="load">搜索</el-button>
           </div>
 
           <div style="margin: 10px 0">
@@ -105,12 +105,12 @@
 
           <!-- 数据主体 -->
           <el-table :data="tableData" stripe >
-            <el-table-column prop="date" label="日期" width="140">
-            </el-table-column>
-            <el-table-column prop="name" label="姓名" width="120">
-            </el-table-column>
-            <el-table-column prop="address" label="地址">
-            </el-table-column>
+            <el-table-column prop="id" label="ID" width="80" />
+            <el-table-column prop="username" label="用户名" width="140" />
+            <el-table-column prop="nickname" label="昵称" width="120" />
+            <el-table-column prop="email" label="邮箱" width="120" />
+            <el-table-column prop="phone" label="电话" width="120" />
+            <el-table-column prop="address" label="地址" />
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button type="success">编辑 <i class="el-icon-edit-outline"></i></el-button>
@@ -122,10 +122,13 @@
           <!-- 分页 -->
           <div class="block" style="padding: 10px 0">
             <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="pageNum"
                     :page-sizes="[5, 10, 15, 20]"
-                    :page-size="10"
+                    :page-size="pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="400">
+                    :total="total">
             </el-pagination>
           </div>
         </el-main>
@@ -146,23 +149,44 @@
 <script>
   export default {
     data() {
-      const item = {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      };
       return {
-        tableData: Array(10).fill(item),
+        tableData: [],
+        total: 0,
+        pageNum: 1,
+        pageSize: 5,
+        username: '',
+        email: '',
+        address: '',
         isCollapse: false,
         collapseBtnClass: 'el-icon-s-fold',
         sideWidth: 200
       }
+    },
+    created() {
+      // 请求分页数据
+      this.load()
     },
     methods: {
       collapse() {
         this.isCollapse = !this.isCollapse;
         this.collapseBtnClass = this.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'
         // this.collapseBtnClass = 'el-icon-s-unfold'
+      },
+      load(){
+        fetch('http://localhost:8081/user/page?pageNum='+this.pageNum+'&pageSize='+this.pageSize+'&username='+this.username).then(res => res.json())
+                .then(res => {
+                  console.log(res)
+                  this.tableData = res.data
+                  this.total = res.total
+                })
+      },
+      handleSizeChange(pageSize){
+        this.pageSize = pageSize;
+        this.load()
+      },
+      handleCurrentChange(pageNum){
+        this.pageNum = pageNum
+        this.load()
       }
     }
   }

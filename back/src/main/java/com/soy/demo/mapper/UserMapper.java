@@ -5,7 +5,6 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
-@Mapper
 public interface UserMapper {
     @Select("select * from sys_user")
     List<User> findAll();
@@ -17,4 +16,10 @@ public interface UserMapper {
 
     @Delete("delete from sys_user where id = #{id}")
     Integer deleteById(@Param("id") Integer id);
+
+    @Select("select * from sys_user where username like concat('%', #{username}, '%') limit #{pageNum}, #{pageSize}")
+    List<User> selectPage(Integer pageNum, Integer pageSize, String username);
+
+    @Select("select count(id) from sys_user where username like concat('%', #{username}, '%')")
+    Integer selectTotal();
 }
