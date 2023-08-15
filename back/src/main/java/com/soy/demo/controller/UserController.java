@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// 控制器，导入service层，因为service中的方法是我们使用到的，controller通过接收前端传过来的参数进行业务操作，在返回一个指定的路径或者数据表。
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -23,8 +24,8 @@ public class UserController {
     // 新增与修改
     @PostMapping()
     // @RequestBody 把请求中的json转换为目标类型 字段名称需要一一对应
-    public Integer save(@RequestBody User user){
-        return userService.save(user);
+    public boolean save(@RequestBody User user){
+        return userService.saveUser(user);
     }
 
     // 查询所有

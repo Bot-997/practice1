@@ -1,16 +1,18 @@
 package com.soy.demo.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.soy.demo.enity.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
-public interface UserMapper {
+// Mapper层=dao层 对数据库进行数据持久化操作
+public interface UserMapper extends BaseMapper<User> {
     @Select("select * from sys_user")
     List<User> findAll();
 
     @Insert("INSERT into sys_user(username, password, nickname, email, phone, address) VALUES (#{username}, #{password}, #{nickname}, #{email}, #{phone}, #{address})")
-    Integer insert(User user);
+    int insert(User user);
 
     int update(User user);
 
