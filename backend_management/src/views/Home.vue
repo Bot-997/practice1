@@ -176,7 +176,7 @@
         fetch('http://localhost:8081/user/page?pageNum='+this.pageNum+'&pageSize='+this.pageSize+'&username='+this.username).then(res => res.json())
                 .then(res => {
                   console.log(res)
-                  this.tableData = res.data
+                  this.tableData = res.records
                   this.total = res.total
                 })
       },
