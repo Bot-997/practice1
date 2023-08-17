@@ -1,5 +1,8 @@
 package com.soy.demo.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soy.demo.enity.User;
 import com.soy.demo.mapper.UserMapper;
 import com.soy.demo.service.UserService;
@@ -16,9 +19,6 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private UserService userService;
 
     // 新增与修改
@@ -31,28 +31,49 @@ public class UserController {
     // 查询所有
     @GetMapping()
     public List<User> findAll(){
-        return userMapper.findAll();
+        return userService.list();
     }
 
     // 删除
     @DeleteMapping("/{id}")
     // @PathVariable("xx") 接收请求路径中占位符的值 如@PathVariable("id")接收/{id}
-    public Integer delete(@PathVariable Integer id){
-        return userMapper.deleteById(id);
+    public boolean delete(@PathVariable Integer id){
+        return userService.removeById(id);
     }
 
-    // 查询分页
-    // @RequestParam接受 ?pageNum=1&pageSize=10 中两个对应值
+//    // 查询分页 手写
+//    // @RequestParam接受 ?pageNum=1&pageSize=10 中两个对应值
+//    @GetMapping("/page")
+//    public Map<String,Object>  findPage(@RequestParam Integer pageNum,
+//                                        @RequestParam Integer pageSize,
+//                                        @RequestParam String username){
+//        pageNum = (pageNum-1) * pageSize;
+//        Map<String,Object> res = new HashMap<>();
+//        List<User> data = userMapper.selectPage(pageNum, pageSize, username);
+//        Integer total = userMapper.selectTotal();
+//        res.put("data", data);
+//        res.put("total", total);
+//        return res;
+//    }
+
+    // 分页查询 mybatis-plus框架
     @GetMapping("/page")
-    public Map<String,Object>  findPage(@RequestParam Integer pageNum,
-                                        @RequestParam Integer pageSize,
-                                        @RequestParam String username){
-        pageNum = (pageNum-1) * pageSize;
-        Map<String,Object> res = new HashMap<>();
-        List<User> data = userMapper.selectPage(pageNum, pageSize, username);
-        Integer total = userMapper.selectTotal();
-        res.put("data", data);
-        res.put("total", total);
-        return res;
+    public IPage<User> findPage(@RequestParam Integer pageNum,
+                                @RequestParam Integer pageSize,
+                                @RequestParam(defaultValue = "") String username,
+                                @RequestParam(defaultValue = "") String email,
+                                @RequestParam(defaultValue = "") String address){
+        IPage<User> page = new Page<>(pageNum,pageSize);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(!"".equals(username)){
+            queryWrapper.like("username", username);
+        }
+        if(!"".equals(email)){
+            queryWrapper.like("email", email);
+        }
+        if(!"".equals(address)){
+            queryWrapper.like("address", address);
+        }
+        return userService.page(page,queryWrapper);
     }
 }

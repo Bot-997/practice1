@@ -1,37 +1,11 @@
-# 用来学习的跟着b站视频做的简单项目，包括vue和git的使用记录
+# 跟着b站视频做的简单项目学习记录
+## vue+spring boot后台管理系统
 使用node16
-##git和远程仓库
-###github上创建了一个仓库，然后和本地连接
 
-git config --global user.name "用户名"
+mybatis和mybatis-plus来操作数据库
 
-git config --global user.email "邮箱"
+swagger2.9.2自动生成API文档
 
-添加ssh公钥
-
-ssh-keygen -t rsa -C "邮箱"
-
-其他配置没做 一路回车
-
-cat ~/.ssh/id_rsa.pub 得到key
-
-在github上setting里添加这个key
-
-ssh -T git@github.com验证一下
-
-初始化仓库 git init
-
-git remote add origin 项目的ssh链接
-
-git pull origin main
-
-git add .
-
-git commit -m ""
-
-git push origin main
-
-git push -u origin main
 
 
 

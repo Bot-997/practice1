@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 public class UserService extends ServiceImpl<UserMapper, User> {
     public boolean saveUser(User user) {
         // mybatis-plus提供的方法
-        boolean save = (user.getId() == null) ? save(user) : updateById(user);
-        return save;
+        return saveOrUpdate(user);
     }
 
 //    @Autowired
