@@ -35,12 +35,16 @@ public class UserController {
     }
 
     // 删除
-    @DeleteMapping("/{id}")
+    @DeleteMapping("del/{id}")
     // @PathVariable("xx") 接收请求路径中占位符的值 如@PathVariable("id")接收/{id}
     public boolean delete(@PathVariable Integer id){
         return userService.removeById(id);
     }
 
+    @PostMapping("/del/batch")
+    public boolean deleteBatch(@RequestBody List<Integer> ids){
+        return userService.removeBatchByIds(ids);
+    }
 //    // 查询分页 手写
 //    // @RequestParam接受 ?pageNum=1&pageSize=10 中两个对应值
 //    @GetMapping("/page")
@@ -57,8 +61,8 @@ public class UserController {
 //    }
 
     // 分页查询 mybatis-plus框架
-    @GetMapping("/page")
-    public IPage<User> findPage(@RequestParam Integer pageNum,
+    @GetMapping("/page/desc")
+    public IPage<User> findPageDesc(@RequestParam Integer pageNum,
                                 @RequestParam Integer pageSize,
                                 @RequestParam(defaultValue = "") String username,
                                 @RequestParam(defaultValue = "") String email,
@@ -74,6 +78,28 @@ public class UserController {
         if(!"".equals(address)){
             queryWrapper.like("address", address);
         }
+        queryWrapper.orderByDesc("id");
+        return userService.page(page,queryWrapper);
+    }
+
+    @GetMapping("/page/asc")
+    public IPage<User> findPageAsc(@RequestParam Integer pageNum,
+                                @RequestParam Integer pageSize,
+                                @RequestParam(defaultValue = "") String username,
+                                @RequestParam(defaultValue = "") String email,
+                                @RequestParam(defaultValue = "") String address){
+        IPage<User> page = new Page<>(pageNum,pageSize);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(!"".equals(username)){
+            queryWrapper.like("username", username);
+        }
+        if(!"".equals(email)){
+            queryWrapper.like("email", email);
+        }
+        if(!"".equals(address)){
+            queryWrapper.like("address", address);
+        }
+        queryWrapper.orderByAsc("id");
         return userService.page(page,queryWrapper);
     }
 }
