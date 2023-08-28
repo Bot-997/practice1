@@ -1,14 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../views/Manager.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    component: () => import('../views/Manager.vue'),
+    redirect: '/home',
+    children: [
+      { path: '/home', name: '首页', component: () => import('../views/Home.vue') },
+      { path: '/userData', name: '用户管理', component: () => import('../views/UserData.vue') }
+    ]
   },
   {
     path: '/about',
