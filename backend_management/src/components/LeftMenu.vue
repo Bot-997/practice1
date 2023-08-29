@@ -13,9 +13,9 @@
                 <img src="../assets/logo.png" style="width: 20px; vertical-align: middle" alt="">
                 <b v-show="!isCollapse" style="color: white">后台管理系统</b>
             </div>
-            <el-menu-item index="/">
+            <el-menu-item index="/home">
+                <i class="el-icon-house"></i>
                 <template slot="title">
-                    <i class="el-icon-house"></i>
                     <span>主页</span>
                 </template>
             </el-menu-item>
@@ -25,7 +25,7 @@
                     <span>系统管理</span>
                 </template>
 
-                <el-menu-item index="/userData">
+                <el-menu-item index="/sysManage/userManage">
                     <template slot="title">
                         <i class="el-icon-s-custom"></i>
                         <span>用户管理</span>

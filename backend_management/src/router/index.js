@@ -1,26 +1,41 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Manager.vue'
+import Router from 'vue-router'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    component: () => import('../views/Manager.vue'),
     redirect: '/home',
-    children: [
-      { path: '/home', name: '首页', component: () => import('../views/Home.vue') },
-      { path: '/userData', name: '用户管理', component: () => import('../views/UserData.vue') }
-    ]
+    meta: {title: '首页'},
+    component: () => import('../views/Manager.vue'),
+    children: [{
+      path: 'home',
+      name: 'home',
+      meta: {title: '首页'},
+      component: () => import('../views/Home.vue')
+    }]
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/sysManage',
+    name: 'sysManage',
+    meta: {title: '系统管理'},
+    redirect: '/sysManage/userManage',
+    component: () => import('../views/Manager.vue'),
+    children: [
+      { path: 'userManage',
+        name: 'userManage',
+        meta: {title: '用户管理'},
+        component: () => import('../components/UserData.vue')
+      },
+    ],
+  },
+  {
+    path: '/login',
+    name: 'login',
+    meta: {title: '登录'},
+    component: () => import('../views/Login.vue'),
   }
 ]
 
@@ -29,5 +44,11 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+const originalPush = Router.prototype.push
+Router.prototype.push = function push(location, onResolve, onReject) {
+  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
 
 export default router

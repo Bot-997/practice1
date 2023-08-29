@@ -1,5 +1,8 @@
 package com.soy.demo.controller;
 
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,7 +11,14 @@ import com.soy.demo.mapper.UserMapper;
 import com.soy.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,5 +111,58 @@ public class UserController {
         }
         queryWrapper.orderByAsc("id");
         return userService.page(page,queryWrapper);
+    }
+
+    // 导出
+    @GetMapping("/export")
+    public void export(HttpServletResponse response) throws IOException {
+        List<User> data = userService.list();
+        // hutool 工具类创建writer在内存操作 写出到浏览器
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+        // 别名
+        writer.addHeaderAlias("username","用户名");
+        writer.addHeaderAlias("password","密码");
+        writer.addHeaderAlias("nickname","昵称");
+        writer.addHeaderAlias("email","邮箱");
+        writer.addHeaderAlias("phone","电话");
+        writer.addHeaderAlias("address","地址");
+        writer.addHeaderAlias("createTime","创建时间");
+        writer.addHeaderAlias("avatarUrl","头像");
+
+        // 一次性写出到excel，使用默认样式，强制输出标题
+        writer.write(data,true);
+
+        // 设置浏览器响应格式
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        String fileName = URLEncoder.encode("用户信息","UTF-8");
+        response.setHeader("Content-Disposition","attachment;filename=" + fileName + ".xlsx");
+
+        ServletOutputStream out = response.getOutputStream();
+        writer.flush(out, true);
+        out.close();
+        writer.close();
+    }
+
+    /**
+    * excel导入
+    * @param file
+    * @throws Exception
+    */
+    @PostMapping("/import")
+    public boolean imp(MultipartFile file) throws Exception {
+        InputStream inputStream = file.getInputStream();
+        ExcelReader reader = ExcelUtil.getReader(inputStream);
+        reader.addHeaderAlias("用户名", "username");
+        reader.addHeaderAlias("密码", "password");
+        reader.addHeaderAlias("昵称", "nickname");
+        reader.addHeaderAlias("邮箱", "email");
+        reader.addHeaderAlias("电话", "phone");
+        reader.addHeaderAlias("地址", "address");
+        reader.addHeaderAlias("创建时间", "createTime");
+        reader.addHeaderAlias("头像", "avatarUrl");
+
+        List<User> data = reader.readAll(User.class);
+        userService.saveBatch(data);
+        return true;
     }
 }

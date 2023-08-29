@@ -4,7 +4,7 @@
             <span :class= "isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'" style="cursor: pointer" @click="collapse"></span>
 
             <el-breadcrumb separator-class="el-icon-arrow-right" style="display: inline-block; margin-left: 20px">
-                <el-breadcrumb-item :to="item.path" v-for="item in paths">item.name</el-breadcrumb-item>
+                <el-breadcrumb-item :to="item.path" v-for="item in paths">{{item.meta.title}}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <el-dropdown style="width: 70px; cursor: pointer">
@@ -25,14 +25,26 @@
         },
         data() {
             return {
-                paths: [],
+                paths: [{ path: "/home", meta: { title: "首页" } }],
+            }
+        },
+        watch: {
+            $route() {
+                this.getBreadcrumb();
             }
         },
         methods:{
             collapse() {
-                this.isCollapse = !this.isCollapse;
+                this.isCollapse = !this.isCollapse
                 this.$emit("collapse", this.isCollapse)
             },
+            getBreadcrumb() {
+                let matched = this.$route.matched
+                if (!matched[0]==='home') {
+                    matched = [{ path: "/home", meta: { title: "首页" }}].concat(matched)
+                }
+                this.paths = matched
+            }
         }
     }
 </script>
